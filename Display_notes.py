@@ -3,6 +3,7 @@
 import tkinter as tk
 import Database as db
 
+
 class DisplayNotes(tk.Toplevel):
     def __init__(self, day, month, year, my_db):
         tk.Toplevel.__init__(self)
@@ -22,9 +23,12 @@ class DisplayNotes(tk.Toplevel):
                             wrap='word', font=('Verdana', 10, 'bold'))
         for note in self.notes:
             self.text.insert('0.0', note[0] + '\n')
-        self.text.pack()
+        self.text.grid(row=0, column=0)
+        self.scroll = tk.Scrollbar(self, command=self.text.yview)
+        self.scroll.grid(row=0, column=1, sticky='NSE')
+        self.text.configure(yscrollcommand=self.scroll.set)
         self.btn = tk.Button(self, text='Submit and close', command=lambda: self.record_the_note())
-        self.btn.pack(ipady=10)
+        self.btn.grid(row=1, ipady=10)
         self.resizable(False, False)
         self.grab_set()
         self.focus_set()
@@ -36,6 +40,7 @@ class DisplayNotes(tk.Toplevel):
         print(self.text.get("0.0", "end-1c"))
         self.db.insert_data_from_display_notes(self.text.get("0.0", "end-1c"), date)
         self.destroy()
+
 
 def show_my_notes(date_tuple):
     my_db = db.DB()

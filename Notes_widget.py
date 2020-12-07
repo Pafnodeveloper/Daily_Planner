@@ -22,8 +22,11 @@ class NotesWidget(tk.Toplevel):
         self.text.grid_propagate(True)
         self.btn = tk.Button(self, text='Submit', command=lambda: self.record_the_note(self.get_tex()))
         self.btn.grid(row=2, column=1, ipady=10)
+        self.scroll = tk.Scrollbar(self, command=self.text.yview)
+        self.scroll.grid(row=0, column=4, sticky='NSE')
+        self.text.configure(yscrollcommand=self.scroll.set)
 
-        #Creating and filling in combobox
+        # Creating and filling in combobox
         self.year_combobox = tk.StringVar()
         self.yearchoosen = ttk.Combobox(self, width=11, justify=tk.CENTER, textvariable=self.year_combobox)
         self.month_combobox = tk.StringVar()
@@ -50,37 +53,47 @@ class NotesWidget(tk.Toplevel):
         self.daychoosen.current(self.day - 1)
 
         self.monthchoosen.bind("<<ComboboxSelected>>", self.on_month)
-        self.monthchoosen.grid(row=1, column=0)
-        # self.monthchoosen.current(self.month - 1)
-
         self.monthchoosen['values'] = self.month_list
         self.monthchoosen.grid(row=1, column=0)
-        # self.monthchoosen.current(self.month - 1)
+        self.monthchoosen.current(self.month - 1)
 
+        self.yearchoosen.bind("<<ComboboxSelected>>", self.on_year)
         self.yearchoosen['values'] = self.year_list
         self.yearchoosen.grid(row=1, column=2)
         self.yearchoosen.current(0)
 
-        self.geometry(f'318x487+{int(self.x) + int(self.width) + 12}+{int(self.y)}')
+        self.geometry(f'337x487+{int(self.x) + int(self.width) + 12}+{int(self.y)}')
         self.resizable(False, False)
         self.grab_set()
         self.focus_set()
 
+    # Adjusting amount of days when month is changed
     def on_month(self, event):
-        if self.month_combobox.get() in ('January', 'March', 'May', 'July', 'August', 'October', 'December'):
-            self.day_list = list(range(1, 32))
+        if int(self.year_combobox.get()) % 4 == 0:
+            if self.month_combobox.get() in ('January', 'March', 'May', 'July', 'August', 'October', 'December'):
+                self.day_list = list(range(1, 32))
+            elif self.month_combobox.get() == 'February':
+                self.day_list = list(range(1, 30))
+            else:
+                self.day_list = list(range(1, 31))
         else:
-            self.day_list = list(range(1, 31))
-        # todo: handle 28/29 days for Feb depending on year
-        self.daychoosen.config(values= self.day_list)
-    #
-    # year = tk.IntVar()
-    # month = tk.StringVar()
-    # day = tk.IntVar()
-    #
-    # m = ttk.Combobox(root, values=months, state="readonly")
-    # self.monthchoosen.bind("<<ComboboxSelected>>", self.on_month)
-    # m.pack()
+            if self.month_combobox.get() in ('January', 'March', 'May', 'July', 'August', 'October', 'December'):
+                self.day_list = list(range(1, 32))
+            elif self.month_combobox.get() == 'February':
+                self.day_list = list(range(1, 29))
+            else:
+                self.day_list = list(range(1, 31))
+        self.daychoosen.config(values=self.day_list)
+
+    # Adjusting amount of days in February when year is changed
+    def on_year(self, event):
+        if int(self.year_combobox.get()) % 4 == 0:
+            if self.month_combobox.get() == 'February':
+                self.day_list = list(range(1, 30))
+        else:
+            if self.month_combobox.get() == 'February':
+                self.day_list = list(range(1, 29))
+        self.daychoosen.config(values=self.day_list)
 
     def get_tex(self):
         return self.text.get("0.0", "end-1c")
@@ -100,6 +113,5 @@ class NotesWidget(tk.Toplevel):
 def show_notes_widget(coordinates):
     my_db = db.DB()
     width, height, x, y = coordinates
-    notes_widget=NotesWidget(my_db, width, height, x, y)
+    notes_widget = NotesWidget(my_db, width, height, x, y)
     notes_widget.mainloop()
-
