@@ -1,7 +1,6 @@
 
 
 import tkinter as tk
-from Notes_widget import show_notes_widget
 from Display_notes import show_my_notes
 import re
 import calendar
@@ -54,24 +53,24 @@ class TheCalendar(tk.Toplevel):
 
     # Создаем календарь
     def fill(self):
-    # Заполняем метку названием нужного месяца и года
+        # Заполняем метку названием нужного месяца и года
         self.info_label['text'] = calendar.month_name[self.month] + ', ' + str(self.year)
-    # Узнаем количество дней в месяце по необходимости сдвигаем год или месяц
+        # Узнаем количество дней в месяце по необходимости сдвигаем год или месяц
         self.month_days = calendar.monthrange(self.year, self.month)[1]
         if self.month == 1:
             self.prev_month_days = calendar.monthrange(self.year-1, 12)[1]
         else:
             self.prev_month_days = calendar.monthrange(self.year, self.month - 1)[1]
-    # Узнаем день недели сегодняшнего дня (от 0 до 6)
+        # Узнаем день недели сегодняшнего дня (от 0 до 6)
         self.week_day = calendar.monthrange(self.year, self.month)[0]
-    # Устанавливаем дату и цвет на кнопках текущего месяца
+        # Устанавливаем дату и цвет на кнопках текущего месяца
         for n in range(self.month_days):
             self.days[n + self.week_day]['text'] = n+1
             self.days[n + self.week_day]['fg'] = 'black'
             self.days[n + self.week_day]['background'] = 'lightgray'
             if self.year == self.now.year and self.month == self.now.month and n == self.now.day:
                 self.days[n + self.week_day-1]['background'] = 'green'
-    # Устанавливаем дату и цвет предыдущего и следующего месяца
+        # Устанавливаем дату и цвет предыдущего и следующего месяца
         for n in range(self.week_day):
             self.days[self.week_day - n - 1]['text'] = self.prev_month_days - n
             self.days[self.week_day - n - 1]['fg'] = 'gray'
@@ -98,10 +97,10 @@ class TheCalendar(tk.Toplevel):
         self.fill()
 
     # Понадобится для передачи своей геометрии
-    # def get_root_position(self):
-    #     self.update_idletasks()
-    #     self.width, self.height, self.x, self.y = re.split(r'[x+]', self.geometry())
-    #     return self.width, self.height, self.x, self.y
+    def get_root_position(self):
+        self.update_idletasks()
+        self.width, self.height, self.x, self.y = re.split(r'[x+]', self.geometry())
+        return self.width, self.height, self.x, self.y
 
     # Извлекаем текст с числом месяца из кнопки
     def get_btn_txt(self, but, row, col):
@@ -119,15 +118,7 @@ class TheCalendar(tk.Toplevel):
             return button_text, self.month, self.year
 
 
-
-
-def show_calendar(coordinates):
+def show_calendar(dock_station, coordinates):
     width, height, x, y = coordinates
-    calendar=TheCalendar(width, height, x, y)
-    calendar.mainloop()
-
-# def get_root_position():
-#     self.update_idletasks()
-#     self.width, self.height, self.x, self.y = re.split(r'[x+]', self.geometry())
-#     return self.width, self.height, self.x, self.y
-
+    my_calendar = TheCalendar(width, height, x, y)
+    my_calendar.mainloop()

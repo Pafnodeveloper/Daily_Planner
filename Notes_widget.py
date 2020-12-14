@@ -105,7 +105,6 @@ class NotesWidget(tk.Toplevel):
         d2_index = self.month_list.index(d2)
         d2_index += 1
         date = d1 + '.' + str(d2_index) + '.' + d3
-        print(text, date)
         self.db.insert_data_from_notes_widget(text, date)
         self.destroy()
 
